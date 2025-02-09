@@ -4,7 +4,7 @@ LIBDIR = libft
 LIB = $(LIBDIR)/libft.a
 
 OBJS = $(SRC:.c=.o)
-SRC = main.c
+SRC = main.c free_exit.c
 NAME = pipex
 
 all:  $(NAME)

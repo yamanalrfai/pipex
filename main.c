@@ -1,25 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yalrfai <yalrfai@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/09 14:50:23 by yalrfai           #+#    #+#             */
+/*   Updated: 2025/02/09 15:20:59 by yalrfai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
-
-void	ft_exit(int fd)
-{
-    if (fd != -1)
-        close(fd);
-    perror("pipex");
-    exit(1);
-}
-
-void	words_free(char **str)
-{
-    int	i;
-
-    i = 0;
-    while (str[i])
-    {
-        free(str[i]);
-        i++;
-    }
-    free(str);
-}
 
 int	get_env(char **cmd, char ***paths, char **envp)
 {
@@ -123,37 +114,32 @@ void   start_cmd2(t_pip *pip, char **argv, char **envp)
     perror("execve");
     exit(1);
 }
+
+void    start_pipex(t_pip *pip, char **argv, char **envp)
+{
+    pip->pid1 = fork();
+    if (pip->pid1 == 0)
+        start_cmd1(pip, argv, envp);
+    pip->pid2 = fork();
+    if (pip->pid2 != 0)
+    {
+        pip->pid2 = fork();
+        if (pip->pid2 == 0)
+            start_cmd2(pip, argv, envp);
+    }
+    else
+        perror("fork");
+}
+
 int main(int argc, char **argv, char **envp)
 {
     t_pip pip;
 
     if (argc != 5)
-    {
-        printf("Usage: %s file1 cmd1 cmd2 file2\n", argv[0]);
-        return (1);
-    }
+        perror("Usage: ./pipex file1 cmd1 cmd2 file2\n");
     if (pipe(pip.fd) == -1)
-    {
         perror("pipe");
-        return (1);
-    }
-    pip.pid1 = fork();
-    if (pip.pid1 == 0)
-        start_cmd1(&pip, argv, envp);
-    pip.pid2 = fork();
-    if (pip.pid2 != 0)
-    {
-        pip.pid2 = fork();
-        if (pip.pid2 == 0)
-        {
-            start_cmd2(&pip, argv, envp);
-        }
-    }
-    else
-    {
-        perror("fork");
-        return (1);
-    }
+    start_pipex(&pip, argv, envp);
     close(pip.fd[0]);
     close(pip.fd[1]);
     wait(NULL);

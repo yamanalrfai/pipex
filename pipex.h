@@ -15,4 +15,6 @@ typedef struct s_pip
     pid_t pid2;
 } t_pip;
 
+void	ft_exit(int fd);
+void	words_free(char **str);
 #endif
