@@ -6,62 +6,11 @@
 /*   By: yaman-alrifai <yaman-alrifai@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 14:50:23 by yalrfai           #+#    #+#             */
-/*   Updated: 2025/02/10 11:01:30 by yaman-alrif      ###   ########.fr       */
+/*   Updated: 2025/02/10 15:16:33 by yaman-alrif      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-int	get_env(char **cmd, char ***paths, char **envp)
-{
-	int	i;
-
-	*cmd = ft_strjoin("/", *cmd);
-	if (!*cmd)
-		return (0);
-	i = 0;
-	*paths = NULL;
-	while (envp[i])
-	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-		{
-			*paths = ft_split(envp[i] + 5, ':');
-			if (!*paths)
-				return (0);
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
-
-char	*get_path(char *cmd, char **envp, int i)
-{
-	char	**paths;
-	char	*joined_cmd;
-	char	*tmp;
-
-	paths = NULL;
-	joined_cmd = NULL;
-	if (!get_env(&cmd, &paths, envp))
-		return (NULL);
-	while (paths[i])
-	{
-		tmp = ft_strjoin(paths[i], cmd);
-		if (!tmp)
-			return (NULL);
-		if (!access(tmp, X_OK))
-		{
-			joined_cmd = tmp;
-			break ;
-		}
-		free(tmp);
-		i++;
-	}
-	free(cmd);
-	words_free(paths);
-	return (joined_cmd);
-}
 
 void	do_cmd(int fd, char *cmd, char **envp)
 {
@@ -71,31 +20,23 @@ void	do_cmd(int fd, char *cmd, char **envp)
 	if (!vector)
 		ft_exit(fd);
 	if (*cmd == 0 || *cmd == ' ')
-	{
-		words_free(vector);
-		errno = EINVAL;
-		close(fd);
-		ft_exit(fd);
-	}
+		thing_in_cmd(vector, fd, 1);
 	if (cmd[0] == '/')
 	{
 		if (!access(cmd, X_OK))
 			execve(cmd, vector, envp);
-		words_free(vector);
-		close(fd);
+		thing_in_cmd(vector, fd, 0);
 		return ;
 	}
 	cmd = get_path(vector[0], envp, 0);
-	if (cmd == NULL)
+	if (!cmd)
 	{
-		words_free(vector);
+		thing_in_cmd(vector, fd, 0);
 		perror("get_path");
-		close(fd);
 		exit(EXIT_FAILURE);
 	}
 	execve(cmd, vector, envp);
-	words_free(vector);
-	close(fd);
+	thing_in_cmd(vector, fd, 0);
 }
 
 void	start_cmd1(t_pip *pip, char **argv, char **envp)

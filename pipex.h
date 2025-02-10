@@ -6,7 +6,7 @@
 /*   By: yaman-alrifai <yaman-alrifai@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 11:25:17 by yaman-alrif       #+#    #+#             */
-/*   Updated: 2025/02/10 11:30:47 by yaman-alrif      ###   ########.fr       */
+/*   Updated: 2025/02/10 15:14:49 by yaman-alrif      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,12 @@ typedef struct s_pip
 
 void	ft_exit(int fd);
 void	words_free(char **str);
+int		get_env(char **cmd, char ***paths, char **envp);
+char	*get_path(char *cmd, char **envp, int i);
+void	do_cmd(int fd, char *cmd, char **envp);
+void	start_cmd1(t_pip *pip, char **argv, char **envp);
+void	start_cmd2(t_pip *pip, char **argv, char **envp);
+void	start_pipex(t_pip *pip, char **argv, char **envp);
+void	thing_in_cmd(char **vector, int fd, int i);
 
 #endif
