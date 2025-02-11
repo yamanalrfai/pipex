@@ -6,7 +6,7 @@
 /*   By: yaman-alrifai <yaman-alrifai@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/10 11:38:51 by yaman-alrif       #+#    #+#             */
-/*   Updated: 2025/02/10 15:13:44 by yaman-alrif      ###   ########.fr       */
+/*   Updated: 2025/02/11 17:36:19 by yaman-alrif      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ char	*get_path(char *cmd, char **envp, int i)
 
 void	thing_in_cmd(char **vector, int fd, int exit)
 {
-	if (!vector)
+	if (vector)
 		words_free(vector);
 	if (exit)
 	{
