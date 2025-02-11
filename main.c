@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yaman-alrifai <yaman-alrifai@student.42    +#+  +:+       +#+        */
+/*   By: yalrfai <yalrfai@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 14:50:23 by yalrfai           #+#    #+#             */
-/*   Updated: 2025/02/10 15:16:33 by yaman-alrif      ###   ########.fr       */
+/*   Updated: 2025/02/11 17:41:38 by yalrfai          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,16 +93,19 @@ void	start_pipex(t_pip *pip, char **argv, char **envp)
 	}
 	if (pip->pid1 == 0)
 		start_cmd1(pip, argv, envp);
-	pip->pid2 = fork();
-	if (pip->pid2 == -1)
+	else
 	{
-		perror("fork");
-		close(pip->fd[0]);
-		close(pip->fd[1]);
-		exit(EXIT_FAILURE);
+		pip->pid2 = fork();
+		if (pip->pid2 == -1)
+		{
+			perror("fork");
+			close(pip->fd[0]);
+			close(pip->fd[1]);
+			exit(EXIT_FAILURE);
+		}
+		if (pip->pid2 == 0)
+			start_cmd2(pip, argv, envp);
 	}
-	if (pip->pid2 == 0)
-		start_cmd2(pip, argv, envp);
 }
 
 int	main(int argc, char **argv, char **envp)
